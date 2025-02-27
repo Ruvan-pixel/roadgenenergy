@@ -1,48 +1,33 @@
-import { UserButton } from '@clerk/nextjs';
-import { auth } from '@clerk/nextjs/server';
-import Link from 'next/link';
-import React from 'react';
+"use client";
 
-const Navbar = async () => {
-    const { userId } = await auth();
+import Link from "next/link";
+import { UserButton, useUser } from "@clerk/nextjs";
 
-    return (
-        <div className='bg bg-cyan-950 rounded-b-xl'>
-            <ul className='flex justify-between py-4 px-6'>
-                <div>
-                    <Link href='/'>
-                        <li>Home</li>
-                    </Link>
-                </div>
-                <div className='flex items-center'>
-                    <Link href='/client'>
-                        <li>Client Page</li>
-                    </Link>
-                </div>
-                <div className='flex gap-6 items-center'>
-                    {!userId ? (
-                        <>
-                            <Link href="/sign-in">
-                                <li>Login</li>
-                            </Link>
-                            <Link href="/sign-up">
-                                <li>Sign Up</li>
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/profile">
-                                <li>Profile</li>
-                            </Link>
-                            <li className='flex items-center'>
-                                <UserButton />
-                            </li>
-                        </>
-                    )}
-                </div>
-            </ul>
-        </div>
-    );
+const Navbar = () => {
+  const { isSignedIn } = useUser();
+
+  return (
+    <nav className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-transparent backdrop-blur-md shadow-md z-50">
+      <div className="text-2xl font-bold text-black">SpeedBreaker</div>
+      <div className="flex gap-4 items-center">
+        <Link href="/" className="hover:underline text-black">Home</Link>
+        {isSignedIn ? (
+          <>
+            <Link href="/profile" className="hover:underline text-black">Profile</Link>
+            <Link href="/dashboard" className="hover:underline text-black">Dashboard</Link>
+            <div className="hover:underline cursor-pointer text-black">
+              <UserButton afterSignOutUrl="/" />
+            </div>
+          </>
+        ) : (
+          <>
+            <Link href="/sign-in" className="hover:underline cursor-pointer text-black">Sign In</Link>
+            <Link href="/sign-up" className="hover:underline cursor-pointer text-black">Sign Up</Link>
+          </>
+        )}
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;
